@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-//@Mod("default_files")
 public class DefaultFiles implements IModLanguageLoader {
     public static final Logger LOGGER = LogManager.getLogger("Default files");
     public static final File RUN_DIR = FMLPaths.GAMEDIR.get().toFile();
