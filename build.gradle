@@ -60,6 +60,12 @@ dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
 }
 
+tasks.jar.manifest {
+    attributes(
+            "FMLModType": "LIBRARY"
+    )
+}
+
 tasks.withType(ProcessResources).configureEach {
     var replaceProperties = [
             minecraft_version      : minecraft_version,
@@ -72,18 +78,12 @@ tasks.withType(ProcessResources).configureEach {
             mod_license            : mod_license,
             mod_version            : mod_version,
             mod_authors            : mod_authors,
-            mod_description        : mod_description
+            mod_description        : mod_description,
     ]
     inputs.properties replaceProperties
 
     filesMatching(['META-INF/neoforge.mods.toml']) {
         expand replaceProperties
-    }
-    manifest {
-        attributes(
-                "Automatic-Module-Name" : "foxy.default_files",
-                "FMLModType" : "LIBRARY"
-        )
     }
 }
 

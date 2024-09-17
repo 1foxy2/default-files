@@ -20,8 +20,11 @@ public class DefaultFiles implements IModLanguageLoader {
     public static final Logger LOGGER = LogManager.getLogger("Default files");
     public static final File RUN_DIR = FMLPaths.GAMEDIR.get().toFile();
     public static final File CONFIG_DIR = FMLPaths.CONFIGDIR.get().toFile();
+    public static boolean initialized = false;
 
     public DefaultFiles() {
+        if (initialized) return;
+        initialized = true;
         LOGGER.info("Applying default options... (Default files)");
         try {
             File defaultFiles = new File(CONFIG_DIR, "default_files");
