@@ -1,9 +1,12 @@
-package me.shedaniel.yosbr;
+package net.foxy.defaultfiles;
 
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.LanguageAdapter;
-import net.fabricmc.loader.api.LanguageAdapterException;
-import net.fabricmc.loader.api.ModContainer;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModLoadingException;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforgespi.language.IModInfo;
+import net.neoforged.neoforgespi.language.IModLanguageLoader;
+import net.neoforged.neoforgespi.language.ModFileScanData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,41 +15,38 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+//@Mod("default_files")
+public class DefaultFiles implements IModLanguageLoader {
+    public static final Logger LOGGER = LogManager.getLogger("Default files");
+    public static final File RUN_DIR = FMLPaths.GAMEDIR.get().toFile();
+    public static final File CONFIG_DIR = FMLPaths.CONFIGDIR.get().toFile();
 
-public class YourOptionsShallBeRespected implements LanguageAdapter {
-    public static final Logger LOGGER = LogManager.getLogger("YOSBR");
-    public static final File RUN_DIR = FabricLoader.getInstance().getGameDirectory();
-    public static final File CONFIG_DIR = FabricLoader.getInstance().getConfigDirectory();
-    
-    /**
-     * We are using pre-launch entrypoint here as we want to be faster than everyone.
-     */
-    public YourOptionsShallBeRespected() {
-        LOGGER.info("Applying default options... (YOSBR)");
+    public DefaultFiles() {
+        LOGGER.info("Applying default options... (Default files)");
         try {
-            File yosbr = new File(CONFIG_DIR, "yosbr");
-            if (!yosbr.exists() && !yosbr.mkdirs()) {
-                throw new IllegalStateException("Could not create directory: " + yosbr.getAbsolutePath());
+            File defaultFiles = new File(CONFIG_DIR, "default_files");
+            if (!defaultFiles.exists() && !defaultFiles.mkdirs()) {
+                throw new IllegalStateException("Could not create directory: " + defaultFiles.getAbsolutePath());
             }
-            new File(yosbr, "options.txt").createNewFile();
-            File config = new File(yosbr, "config");
+            new File(defaultFiles, "options.txt").createNewFile();
+            File config = new File(defaultFiles, "config");
             if (!config.exists() && !config.mkdirs()) {
                 throw new IllegalStateException("Could not create directory: " + config.getAbsolutePath());
             }
-            Files.walk(yosbr.toPath()).forEach(path -> {
+            Files.walk(defaultFiles.toPath()).forEach(path -> {
                 File file = path.normalize().toAbsolutePath().normalize().toFile();
                 if (!file.isFile()) return;
                 try {
                     try {
                         Path configRelative = config.toPath().toAbsolutePath().normalize().relativize(file.toPath().toAbsolutePath().normalize());
-                        if (configRelative.startsWith("yosbr"))
+                        if (configRelative.startsWith("default_files"))
                             throw new IllegalStateException("Illegal default config file: " + file);
                         applyDefaultOptions(new File(CONFIG_DIR, configRelative.normalize().toString()), file);
                     } catch (IllegalArgumentException e) {
-                        System.out.println(yosbr.toPath().toAbsolutePath().normalize());
+                        System.out.println(defaultFiles.toPath().toAbsolutePath().normalize());
                         System.out.println(file.toPath().toAbsolutePath().normalize());
-                        System.out.println(yosbr.toPath().toAbsolutePath().normalize().relativize(file.toPath().toAbsolutePath().normalize()));
-                        applyDefaultOptions(new File(RUN_DIR, yosbr.toPath().toAbsolutePath().normalize().relativize(file.toPath().toAbsolutePath().normalize()).normalize().toString()), file);
+                        System.out.println(defaultFiles.toPath().toAbsolutePath().normalize().relativize(file.toPath().toAbsolutePath().normalize()));
+                        applyDefaultOptions(new File(RUN_DIR, defaultFiles.toPath().toAbsolutePath().normalize().relativize(file.toPath().toAbsolutePath().normalize()).normalize().toString()), file);
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -73,9 +73,19 @@ public class YourOptionsShallBeRespected implements LanguageAdapter {
                     RUN_DIR.toPath().toAbsolutePath().normalize().relativize(defaultFile.toPath().toAbsolutePath().normalize()).normalize().toString());
         Files.copy(defaultFile.toPath(), file.toPath());
     }
-    
+
     @Override
-    public <T> T create(ModContainer mod, String value, Class<T> type) throws LanguageAdapterException {
+    public String name() {
+        return "default_files";
+    }
+
+    @Override
+    public String version() {
+        return "1";
+    }
+
+    @Override
+    public ModContainer loadMod(IModInfo info, ModFileScanData modFileScanResults, ModuleLayer layer) throws ModLoadingException {
         throw new IllegalStateException();
     }
 }
