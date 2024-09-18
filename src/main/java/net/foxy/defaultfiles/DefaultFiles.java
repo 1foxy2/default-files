@@ -30,7 +30,6 @@ public class DefaultFiles implements IModLanguageLoader {
             if (!defaultFiles.exists() && !defaultFiles.mkdirs()) {
                 throw new IllegalStateException("Could not create directory: " + defaultFiles.getAbsolutePath());
             }
-            new File(defaultFiles, "options.txt").createNewFile();
             File config = new File(defaultFiles, "config");
             if (!config.exists() && !config.mkdirs()) {
                 throw new IllegalStateException("Could not create directory: " + config.getAbsolutePath());
